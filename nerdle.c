@@ -60,14 +60,15 @@ int main(){
 }
 
 void print_rule(){
-    printf("------------------NERDLE_RULE-----------------\n");
+    printf("-----------------NERDLE 2.1.0-----------------\n\n");
+    printf("----------------------RULE--------------------\n");
     printf(" ! is not in the target equation at all\n");
     printf(" ^ is in the equation ,but in the wrong space\n");
     printf(" $ is in the equation and in the correct spot\n");
     printf("----------------------------------------------\n");
     printf(" !  There is no more 0 before each word  !\n");
     printf("----------------------------------------------\n\n");
-    printf("Developer model?(Y/n)");
+    printf("Developer Model?(Y/n)");
     char input;
     scanf("%c",&input);
     if(input=='Y'){
@@ -259,6 +260,7 @@ void random_equation(){
         for(int i=num_min;i<num_min*10;i++){
             stick_num[tail_num+1]=i;
             float temp=op(stick_num,stick_sign,tail_num,tail_sign);
+            if(floor(temp)!=ceil(temp)){continue;}
             if(temp>=0&&digit_num((int)temp)==7-loc_eq){//匹配位数
                 flag=1;
                 stick_ans[++tail_ans]=i;//记录全部可行值再随机抽取
