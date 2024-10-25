@@ -52,7 +52,7 @@ int main(){
         printf("-------------------- LOSS --------------------\n");
         printf("               ANS:");
         for(int i=0;i<8;i++){
-            printf("%s",st_equation[i]);
+            printf("%c",st_equation[i]);
         }
     }
     getch();
@@ -60,7 +60,7 @@ int main(){
 }
 
 void print_rule(){
-    printf("-----------------NERDLE 2.1.0-----------------\n\n");
+    printf("-----------------NERDLE 2.1.1-----------------\n\n");
     printf("----------------------RULE--------------------\n");
     printf(" ! is not in the target equation at all\n");
     printf(" ^ is in the equation ,but in the wrong space\n");
