@@ -4,12 +4,10 @@
 #include <time.h>
 #include <winsock.h>
 
-#define MAX_GUESS_FRE 6
-
 char st_equation[8]="00000000";
 
 //函数组0
-void print_rule();
+int print_rule();
 
 //函数组1：输入检测
 int is_valid_equation(char input[]);//检查输入是否合法
@@ -30,11 +28,10 @@ int digit_num(int n);//判断位数
 int main(){
     random_equation();
 
-    print_rule();
+    int n=1,key=0,max_guess=6;
 
-    int n=1,key=0;
-
-    while(n<=MAX_GUESS_FRE){
+    if(print_rule()){max_guess=100;}
+    while(n<=max_guess){
         char guess[20];
         printf("------------------ GUESS #%d ------------------\n                   ",n++);
         scanf("%s",guess);
@@ -48,19 +45,17 @@ int main(){
             n--;
         }
     }
+
     if(!key){
-        printf("-------------------- LOSS --------------------\n");
-        printf("               ANS:");
-        for(int i=0;i<8;i++){
-            printf("%c",st_equation[i]);
-        }
+        printf("-------------------- FAIL --------------------\n");
+        printf("               ANS:%s",st_equation);
     }
     getch();
     return 0;
 }
 
-void print_rule(){
-    printf("-----------------NERDLE 2.1.1-----------------\n\n");
+int print_rule(){
+    printf("-----------------NERDLE 2.2.2-----------------\n\n");
     printf("----------------------RULE--------------------\n");
     printf(" ! is not in the target equation at all\n");
     printf(" ^ is in the equation ,but in the wrong space\n");
@@ -72,12 +67,11 @@ void print_rule(){
     char input;
     scanf("%c",&input);
     if(input=='Y'){
-        printf("ANS:");
-        for(int i=0;i<8;i++){
-            printf("%c",st_equation[i]);
-        }
+        printf("ANS:%s\nYou will have up to 100 chances.\n",st_equation);
+        return 1;
     }
     printf("\n\n");
+    return 0;
 }
 
 
