@@ -9,16 +9,16 @@ char st_equation[8]="00000000";
 //函数组0
 int print_rule();
 
-//函数组1：输入检测
+//模组1：输入检测
 int is_valid_equation(char input[]);//检查输入是否合法
 float op(int n[],char s[],int tn,int ts);
 float cal(float a,float b,char op);//计算算式
 
-//函数组2：输入匹配
+//模组2：输入匹配
 int check_diff(char input[]);//比较初始与输入算式
 int en_num(char a);//将符号转为地址
 
-//函数组3：随机等式生成
+//模组3：随机等式生成
 void random_equation();//随机生成算式
 char random_sign(int seed);//随机生成计算符
 int random_num(int digit,int seed);//随机生成digit位数字
@@ -55,13 +55,14 @@ int main(){
 }
 
 int print_rule(){
-    printf("-----------------NERDLE 2.2.2-----------------\n\n");
+    printf("-----------------NERDLE 2.3.2-----------------\n\n");
     printf("----------------------RULE--------------------\n");
     printf(" ! is not in the target equation at all\n");
     printf(" ^ is in the equation ,but in the wrong space\n");
     printf(" $ is in the equation and in the correct spot\n");
     printf("----------------------------------------------\n");
     printf(" !  There is no more 0 before each word  !\n");
+    printf(" !  Commutative laws are not supported   !\n");
     printf("----------------------------------------------\n\n");
     printf("Developer Model?(Y/n)");
     char input;
@@ -90,7 +91,7 @@ int is_valid_equation(char input[]){
     int i=0,flag=0;//遍历
     while(i<8){
         if (input[i]=='+'||input[i]=='-'||input[i]=='*'||input[i]=='/'){
-            if(flag){
+            if(flag){//flag保证加了数字才会计入stick_num
                 stick_num[++tail_num]=temp;
                 temp=0;
                 flag=0;
@@ -212,20 +213,20 @@ void random_equation(){
         int loc_eq=rand()%3+4;
         st_equation[loc_eq]='=';//先确定‘=’位置
 
-        int i=-1;
+        int loc=-1;
         int end=0;//记录最后一个字符位置
         char stick_sign[2]="oo";int tail_sign=-1;
         int stick_num[3]={0,0,0};int tail_num=-1;
 
-        while(i<loc_eq-2){//再确定符号位置
+        while(loc<loc_eq-2){//再确定符号位置
             seed=(seed)%9+1;
             srand((unsigned int)time(NULL)*seed);
-            i+=rand()%3+2;
+            loc+=rand()%3+2;
 
-            if(i<loc_eq-1){
-                st_equation[i]=random_sign(seed);
-                stick_sign[++tail_sign]=st_equation[i];
-                end=i;
+            if(loc<loc_eq-1){
+                st_equation[loc]=random_sign(seed);
+                stick_sign[++tail_sign]=st_equation[loc];
+                end=loc;
             }
         }
 
@@ -243,7 +244,7 @@ void random_equation(){
             }else if(st_equation[j]=='+'||st_equation[j]=='-'||
                       st_equation[j]=='*'||st_equation[j]=='/'){
                 stick_num[++tail_num]=random_num(j-beg,(seed)%9+1);
-                beg=i+1;
+                beg=j+1;
             }
             j++;
         }
