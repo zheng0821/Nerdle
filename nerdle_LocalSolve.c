@@ -7,8 +7,11 @@
 #define MAX(a,b) a>b ? a:b
 #define MIN(a,b) a>b ? b:a
 
-char input[9]="12+36=48";//首次输出
+int count=1;//交互次数
 
+char input[9]="12+36=48";//首次输出
+char diff_input[9];//用于第二次输出，负责产生差异化更大的数组
+int max_diff=0;//衡量差异化的参数
 
 char input_confirmed[9]="????????";
 int confirmed[3]={0,0,0};//分别记录三种(数字，运算符，等号)已确定的数量
@@ -55,9 +58,10 @@ void quick_process(int loc);
 
 //预测模组：根据限制条件预测
 void modify_equation();
-int fulfill_sign(int num,int loc_eq);
-int fulfill_num(int loc);
-int match(char e[],int i);
+int fulfill_sign(int num,int loc_eq);//填运算符
+int fulfill_num(int loc);//填数字
+int match(int i);//判断LHS是否能填入右侧
+int diff();//比较差异
 
 //计算模组
 float cal(float a,float b,char op);
@@ -65,16 +69,16 @@ float op(char temp[]);
 
 
 int main(){
-    int count=1;
-    while(1){
+    int DM=print_rule();
 
+    while(1){
         if(count==7){printf("\n!-!-!-!-LOSE-!-!-!-!\n\n");}
-        printf("--------TRY%d--------\n",count++);
+        printf("\n--------TRY%d--------\n",count++);
         printf("predict  : %s \n",input);
         printf("feedback : ");
         char output[9];
         scanf("%s",output);
-        printf("--------------------\n\n");
+        printf("--------------------\n");
 
         if(!output_check(output)){
             printf("Invalid\n");
@@ -88,10 +92,49 @@ int main(){
             break;
         }
 
+        if(DM){
+            for(int i=0;i<15;i++){
+                printf("%c  ： ",de_num(i));
+                for(int j=0;j<8;j++){
+                    printf("%d ",dis[i][j]);
+                }
+                printf("\n");
+            }
+            printf("%s\n",input_confirmed);
+            for(int i=0;i<15;i++){
+                printf("%c : %d ",de_num(i),possible_dis[i]);
+            }
+            printf("\n");
+            for(int i=0;i<3;i++){
+                printf("%d ",confirmed[i]);
+            }
+            printf("\n");
+        }
+
         modify_equation();
 
     }
     return 0;
+}
+
+int print_rule(){
+    char temp;
+    printf("------------NerdleLocalSolve 3.1.0------------\n\n");
+    printf("----------------------RULE--------------------\n");
+    printf(" ! is not in the target equation at all\n");
+    printf(" ^ is in the equation ,but in the wrong space\n");
+    printf(" $ is in the equation and in the correct spot\n");
+    printf("----------------------------------------------\n");
+    printf("!Ensure the logical rationality of the input!\n");
+    printf("----------------------------------------------\n\n");
+
+    printf("Developer Mode?(Y/n)");
+    scanf("%c",&temp);
+    if(temp=='Y'){
+        return 1;
+    }else{
+        return 0;
+    }
 }
 
 int output_check(char a[]){
@@ -179,14 +222,19 @@ void modify_equation(){
     for(int i=4;i<=6;i++){
         if(dis[14][i]==0){continue;}
         input[i]='=';
-        for(int j=MAX(confirmed[1],1);j<=ceil(i/4);j++){
+        for(int j=MAX(confirmed[1],1);j<=ceil(i*0.25);j++){
             if(fulfill_sign(j-confirmed[1],i)){
-                int temp=(int)op(input);
+                /*int temp=(int)op(input);
                 for(int k=7;k>i;k--){//填入RHS
                     input[k]=(char)(temp%10+48);
                     temp/=10;
-                }
+                }*/
                 break;
+            }
+        }
+        if(count==2){
+            for(int i=0;i<8;i++){
+                input[i]=diff_input[i];//归档
             }
         }
     }//确定等号>>运算符>>数字三步确定
@@ -223,18 +271,20 @@ int fulfill_sign(int num,int loc_eq){
                     for(int j=i+2;j<=4;j++){
                         if(input[j]!='?'){continue;}
                         for(int sign2=10;sign2<=13;sign2++){
-                            if(possible_dis[sign1]>0){
+                            if(possible_dis[sign2]>0){
                                 flag[1]=1;
                             }
-                            if(flag[1]||dis[sign2][4]==1){
+                            if(flag[1]||dis[sign2][j]==1){
                                 if(flag[1]){
                                     possible_dis[sign2]--;
                                 }
-                                input[2]=de_num(sign1);
-                                input[4]=de_num(sign2);
+                                input[i]=de_num(sign1);
+                                input[j]=de_num(sign2);
+
                                 if(fulfill_num(0)){return 1;}
-                                input[2]='?';
-                                input[4]='?';
+
+                                input[i]='?';
+                                input[j]='?';
                                 if(flag[1]){
                                     possible_dis[sign2]++;
                                 }
@@ -257,13 +307,21 @@ int fulfill_num(int loc){
         loc++;
     }//定位到第一步可设值的位置
     if(input[loc]=='='){//检查
-        int LHS=match(input,loc);
+        for(int i=0;i<15;i++){
+            if(possible_dis[i]){
+                return 0;//保证都被使用
+            }
+        }
+        int LHS=match(loc);
         if(LHS>0){
             for(int i=7;i>loc;i--){
-                if(input[i]!='?'){
-                    input[i]=LHS%10;
-                }
+                input[i]=(char)(LHS%10+48);
                 LHS/=10;
+            }
+            if(count==2){
+                if(!diff()){
+                    return 0;//继续深搜,除非差异化已经最大了
+                }
             }
             return 1;
         }else{
@@ -291,8 +349,8 @@ int fulfill_num(int loc){
     return 0;
 }
 
-int match(char e[],int i){//匹配输出右值
-    float temp=op(e);
+int match(int i){//匹配输出右值
+    float temp=op(input);
     if(ceil(temp)!=floor(temp)||temp<0){
         return -1;
     }
@@ -301,14 +359,14 @@ int match(char e[],int i){//匹配输出右值
         return 1;
     }
     for(int j=7;j>i;j--){
-        if(e[j]=='?'){
+        if(input_confirmed[j]=='?'){
             if (LHS==0&&j==i+1){
                 return -1;//避免前导0
             }
             if (dis[LHS%10][j]==0){
                 return -1;
             }
-        }else if(e[j]!=(char)(LHS%10+48)){
+        }else if(input_confirmed[j]!=(char)(LHS%10+48)){
             return -1;
         }
         LHS/=10;
@@ -320,6 +378,33 @@ int match(char e[],int i){//匹配输出右值
     }
 }
 
+int diff(){
+    int unconfirmed=8-confirmed[0]-confirmed[1]-confirmed[2];
+    int diff[15]={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+    int temp_diff;
+    for(int i=0;i<8;i++){
+        if(input_confirmed[i]=='?'){
+            if(!diff[en_num(input[i])]){
+                diff[en_num(input[i])]++;
+            }
+        }
+    }
+    for(int i=0;i<15;i++){
+        if(diff[i]){
+            temp_diff++;
+        }
+    }
+    if(temp_diff>max_diff){
+        max_diff=temp_diff;
+        for(int i=0;i<8;i++){
+            diff_input[i]=input[i];
+        }
+        if(temp_diff==unconfirmed){//两两不一
+            return 1;
+        }
+    }
+    return 0;
+}
 
 int en_num(char a){
     switch(a){

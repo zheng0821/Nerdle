@@ -4,7 +4,7 @@
 #include <time.h>
 #include <winsock.h>
 
-char st_equation[8]="00000000";
+char st_equation[9]="00000000";
 
 //函数组0
 int print_rule();
@@ -26,8 +26,6 @@ int quick_check(int loc,char stick[],int tail);//快速遴选  提高效率
 int digit_num(int n);//判断位数
 
 int main(){
-    random_equation();
-
     int n=1,key=0,max_guess=6;
 
     if(print_rule()){max_guess=100;}
@@ -55,7 +53,8 @@ int main(){
 }
 
 int print_rule(){
-    printf("-----------------NERDLE 2.3.2-----------------\n\n");
+
+    printf("-----------------NERDLE 2.4.2-----------------\n\n");
     printf("----------------------RULE--------------------\n");
     printf(" ! is not in the target equation at all\n");
     printf(" ^ is in the equation ,but in the wrong space\n");
@@ -68,10 +67,31 @@ int print_rule(){
     char input;
     scanf("%c",&input);
     if(input=='Y'){
+        printf("Generate the equation by random or manual input?\n(R/m)");
+        char input2;
+        while(getchar()!='\n');
+        scanf("%c",&input2);
+        if(input2=='R'){
+            random_equation();
+        }else{
+            char temp[20];
+            while(1){
+                printf("Input your equation:");
+                scanf("%s",temp);
+                if(is_valid_equation(temp)){
+                    for(int i=0;i<8;i++){
+                        st_equation[i]=temp[i];
+                    }
+                    break;
+                }
+            }
+
+        }
         printf("ANS:%s\nYou will have up to 100 chances.\n",st_equation);
         return 1;
     }
     printf("\n\n");
+
     return 0;
 }
 
