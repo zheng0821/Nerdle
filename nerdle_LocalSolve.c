@@ -78,7 +78,6 @@ int main(){
         printf("             feedback : ");
         char output[9];
         scanf("%s",output);
-        //printf("----------------------------------------------\n");
 
         if(!output_check(output)){
             printf("Invalid\n");
