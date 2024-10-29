@@ -73,12 +73,12 @@ int main(){
 
     while(1){
         if(count==7){printf("\n!-!-!-!-LOSE-!-!-!-!\n\n");}
-        printf("\n--------TRY%d--------\n",count++);
-        printf("predict  : %s \n",input);
-        printf("feedback : ");
+        printf("\n----------------------TRY%d--------------------\n",count++);
+        printf("              predict : %s \n",input);
+        printf("             feedback : ");
         char output[9];
         scanf("%s",output);
-        printf("--------------------\n");
+        //printf("----------------------------------------------\n");
 
         if(!output_check(output)){
             printf("Invalid\n");
@@ -93,6 +93,7 @@ int main(){
         }
 
         if(DM){
+            printf("\nPossible distribution:\n");
             for(int i=0;i<15;i++){
                 printf("%c  £º ",de_num(i));
                 for(int j=0;j<8;j++){
@@ -100,11 +101,16 @@ int main(){
                 }
                 printf("\n");
             }
-            printf("%s\n",input_confirmed);
+            printf("others:");
             for(int i=0;i<15;i++){
-                printf("%c : %d ",de_num(i),possible_dis[i]);
+                printf("\'%c\':%d ;",de_num(i),possible_dis[i]);
+                if(i==6){
+                    printf("\n");
+                }
             }
             printf("\n");
+            printf("Confirmed equation: %s\n",input_confirmed);
+            printf("Confirmed number(number,operator,equal-sign): ");
             for(int i=0;i<3;i++){
                 printf("%d ",confirmed[i]);
             }
