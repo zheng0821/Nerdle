@@ -89,6 +89,8 @@ int print_rule(){
         }
         printf("ANS:%s\nYou will have up to 100 chances.\n",st_equation);
         return 1;
+    }else{
+        random_equation();
     }
     printf("\n\n");
 

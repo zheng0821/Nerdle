@@ -1,5 +1,4 @@
 #include <stdio.h>
-#include<math.h>
 #include <stdlib.h>
 #include <time.h>
 #include <winsock.h>
@@ -49,6 +48,7 @@ int quick_check[3][4][4]={ { {1,1,0,0},  // +   //loc_eq(等号位置)=4
 int output_check(char a[]);//简单的输入检测，但假定所有的输入均逻辑自洽
 int en_num(char a);
 char de_num(int a);
+int ceil(float a);//补充math.h
 
 //限制模组：根据反馈修改限制条件
 void modify_limitation();
@@ -152,6 +152,14 @@ int output_check(char a[]){
     return 1;
 }
 
+int ceil(float a){
+    if(a>(int)a){
+        return (int)a+1;
+    }else{
+        return (int)a;
+    }
+}
+
 
 void modify_limitation(char feedback[]){
     int temp_poss_dis[16]={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
@@ -229,11 +237,6 @@ void modify_equation(){
         input[i]='=';
         for(int j=MAX(confirmed[1],1);j<=ceil(i*0.25);j++){
             if(fulfill_sign(j-confirmed[1],i)){
-                /*int temp=(int)op(input);
-                for(int k=7;k>i;k--){//填入RHS
-                    input[k]=(char)(temp%10+48);
-                    temp/=10;
-                }*/
                 break;
             }
         }

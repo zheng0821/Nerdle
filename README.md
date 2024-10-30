@@ -1,5 +1,7 @@
 # C2 NERDLE
 
+PS：程序是在codeblock上写的，注释的编码是GB2312;
+
 ## 使用介绍
 - PART1.nerdle本地游戏
   - Developer Mode？(可选开发者模式)
